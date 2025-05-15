@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Jogadores e Personagens</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Personagens</h1>
+    <form id="userForm">
+        <input type="text" id="jogador" placeholder="Jogador" required>
+        <input type="text" id="personagem" placeholder="Personagem" required>
+        <select id="classe" required>
+            <option value="Combatente" selected>Combatente</option>
+            <option value="Especialista">Especialista</option>
+            <option value="Ocultista">Ocultista</option>
+        </select>
+        <input type="number" min="0" max="10" id="vigor" placeholder="Vigor" required>
+        <input type="number" min="0" max="10" id="presença" placeholder="Presença" required>
+        <input type="number" min="1" max="20" id="nivel" placeholder="Nível" required>
+        <button type="submit">Adicionar Personagem</button>
+    </form>
+
+    <h2>Lista de Jogadores</h2>
+    <ul id="userList"></ul>
+
+    <script>
+        const apiUrl = 'https://rknekvbwvxxxhvpcflkx.supabase.co/rest/v1/players';
+        const headers = {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrbmVrdmJ3dnh4eGh2cGNmbGt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczMTQ3NDAsImV4cCI6MjA2Mjg5MDc0MH0.rigJWnfHTi63VWvIWz3jQBYC0o4Oov0YN5CsRaldQjE',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrbmVrdmJ3dnh4eGh2cGNmbGt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczMTQ3NDAsImV4cCI6MjA2Mjg5MDc0MH0.rigJWnfHTi63VWvIWz3jQBYC0o4Oov0YN5CsRaldQjE',
+            'Content-Type': 'application/json'
+        };
+
+        async function fetchUsers() {
+            const response = await fetch(apiUrl + '?select=*', { headers });
+            const users = await response.json();
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+
+            users.forEach(user => {
+                const li = document.createElement('li');
+                const pv = calculapv(user);
+                const pe = calculape(user);
+                li.innerHTML = `
+                    <strong>${user.personagem}</strong> (Jogador: ${user.jogador})<br>
+                    Classe: ${user.classe} | Vigor: ${user.vigor} | Presença: ${user.presença} | Nível: ${user.nivel} |
+                ` + 'PV: '+ pv + ' | PE: '+ pe + ' ';
+
+                const updateBtn = document.createElement('button');
+                updateBtn.textContent = 'Atualizar';
+                updateBtn.onclick = () => {
+                    const novoJogador = prompt('Novo Jogador:', user.jogador);
+                    const novoPersonagem = prompt('Novo Personagem:', user.personagem);
+                    const novoVigor = prompt('Novo Vigor:', user.vigor);
+                    const novaPresenca = prompt('Nova Presença:', user.presença);
+                    const novoNivel = prompt('Novo Nivel:', user.nivel);
+
+                    if (novoJogador && novoPersonagem && novoVigor && novaPresenca && novoNivel) {
+                        fetch(`${apiUrl}?id=eq.${user.id}`, {
+                            method: 'PATCH',
+                            headers,
+                            body: JSON.stringify({
+                                jogador: novoJogador,
+                                personagem: novoPersonagem,
+                                vigor: parseInt(novoVigor),
+                                presença: parseInt(novaPresenca),
+                                nivel: parseInt(novoNivel)
+                            }),
+                        }).then(fetchUsers);
+                    }
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Deletar';
+                deleteBtn.onclick = async () => {
+                    await fetch(`${apiUrl}?id=eq.${user.id}`, { method: 'DELETE', headers });
+                    fetchUsers();
+                };
+
+                li.appendChild(updateBtn);
+                li.appendChild(deleteBtn);
+                userList.appendChild(li);
+            });
+        }
+
+        function calculapv(user){
+            if(user.nivel == 1) {
+                if(user.classe == 'Combatente') return user.vigor + 20;
+                if(user.classe == 'Especialista') return user.vigor + 16;
+                if(user.classe == 'Ocultista') return user.vigor + 12;
+            } else {
+                if(user.classe == 'Combatente') return user.vigor + 20 + (4*(user.nivel-1) + user.vigor*(user.nivel-1));
+                if(user.classe == 'Especialista') return user.vigor + 16 + (3*(user.nivel-1) + user.vigor*(user.nivel-1));
+                if(user.classe == 'Ocultista') return user.vigor + 12 + (2*(user.nivel-1) + user.vigor*(user.nivel-1));
+            }
+        }
+
+        function calculape(user){
+            if(user.classe == 'Combatente') return (user.presença + 2) * user.nivel;
+            if(user.classe == 'Especialista') return (user.presença + 3) * user.nivel;
+            if(user.classe == 'Ocultista') return (user.presença + 4) * user.nivel;
+        }
+
+        async function addUser(event) {
+            event.preventDefault();
+            const jogador = document.getElementById('jogador').value;
+            const personagem = document.getElementById('personagem').value;
+            const classe = document.getElementById('classe').value;
+            const vigor = parseInt(document.getElementById('vigor').value);
+            const presença = parseInt(document.getElementById('presença').value);
+            const nivel = parseInt(document.getElementById('nivel').value);
+
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ jogador, personagem, classe, vigor, presença, nivel }),
+            });
+
+            document.getElementById('userForm').reset();
+            fetchUsers();
+        }
+
+        document.getElementById('userForm').addEventListener('submit', addUser);
+        fetchUsers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+/* Fonte mística e sombria do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+
+body {
+    font-family: 'Uncial Antiqua', cursive;
+    background: url('https://img.stablecog.com/insecure/1920w/aHR0cHM6Ly9iLnN0YWJsZWNvZy5jb20vZTYwNzE5ZjItMGNmMC00NjgzLWI1NzMtODQyNjk5YjBiZWU4LmpwZWc.webp') no-repeat center center fixed;
+    background-size: cover;
+    color: #e0d6ff;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2 {
+    text-align: center;
+    text-shadow: 0 0 8px #8e44ad;
+    margin-top: 30px;
+}
+
+form {
+    background: rgba(20, 20, 30, 0.85);
+    border: 2px solid #6a0dad;
+    border-radius: 15px;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(150, 0, 200, 0.5);
+}
+
+form input, form select, form button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #f4eaff;
+}
+
+form input:focus, form select:focus {
+    outline: none;
+    box-shadow: 0 0 10px #8e44ad;
+}
+
+form button {
+    background: linear-gradient(45deg, #6a0dad, #9b59b6, #3498db);
+    background-size: 200% auto;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+form button:hover {
+    background-position: right center;
+    box-shadow: 0 0 15px #9b59b6;
+}
+
+#userList {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0;
+    list-style: none;
+}
+
+#userList li {
+    background: rgba(30, 30, 40, 0.8);
+    margin: 10px 0;
+    padding: 15px;
+    border-left: 5px solid #9b59b6;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(150, 0, 200, 0.3);
+    position: relative;
+    transition: transform 0.3s;
+}
+
+#userList li:hover {
+    transform: scale(1.02);
+}
+
+#userList button {
+    margin-left: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: linear-gradient(45deg, #8e44ad, #5e3370);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+#userList button:hover {
+    background: linear-gradient(45deg, #a569bd, #76448a);
+    box-shadow: 0 0 8px #8e44ad;
+}
